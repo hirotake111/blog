@@ -1,6 +1,6 @@
 import { Firestore } from "firebase-admin/firestore";
 import { AuthCodeDoc, AuthCodeDocSchema } from "./domain";
-import { Err, Ok, Result } from "./types";
+import { Err, Ok, Result } from "../types";
 
 const AUTH_CODE_COLLECTION = "auth_code";
 

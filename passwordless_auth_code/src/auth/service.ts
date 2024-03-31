@@ -1,5 +1,5 @@
 import { AuthCodeDoc } from "./domain";
-import { Err, Ok, Result } from "./types";
+import { Err, Ok, Result } from "../types";
 
 type UserRecord = { uid: string };
 
