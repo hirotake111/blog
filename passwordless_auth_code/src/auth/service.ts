@@ -81,9 +81,24 @@ export class AuthCodeService {
     if (!result.success) {
       return Err(result.detail);
     }
-    // send code to email
-    await sendEmailWithAuthCode(email, code);
     return Ok({ code });
+  }
+}
+
+export class EmailService {
+  constructor() {}
+
+  public async sendEmailWithAuthCode(
+    to: string,
+    code: string
+  ): Promise<Result<{ success: boolean }>> {
+    try {
+      console.log(`sending email to ${to} with authentication code: ${code}`);
+      return Ok({ success: true });
+    } catch (e) {
+      console.log(e);
+      return Err("failed to send email to user");
+    }
   }
 }
 
@@ -93,17 +108,4 @@ function getRandomCode(length: number) {
     code += Math.floor(Math.random() * 10);
   }
   return code;
-}
-
-async function sendEmailWithAuthCode(
-  to: string,
-  code: string
-): Promise<Result<{ success: boolean }>> {
-  try {
-    console.log(`sending email to ${to} with authentication code: ${code}`);
-    return Ok({ success: true });
-  } catch (e) {
-    console.log(e);
-    return Err("failed to send email to user");
-  }
 }

@@ -10,8 +10,18 @@ interface AuthCodeService {
   generateCode(email: string): Promise<Result<{ code: string }>>;
 }
 
+interface EmailService {
+  sendEmailWithAuthCode(
+    to: string,
+    code: string
+  ): Promise<Result<{ success: boolean }>>;
+}
+
 export class AuthHandler {
-  constructor(private service: AuthCodeService) {}
+  constructor(
+    private authService: AuthCodeService,
+    private emailService: EmailService
+  ) {}
 
   public async handleAuth(c: Context) {
     const authType = c.req.query("auth_type");
@@ -19,33 +29,39 @@ export class AuthHandler {
       case "code":
         return this.handleAuthCodeRequest(c);
       default:
-        c.status(400);
-        return c.json({ success: false, detail: "bad request" });
+        return c.json({ success: false, detail: "bad request" }, 400);
     }
   }
 
   public async handleLogin(c: Context) {
     const body = await c.req.json();
     // TODO: validation
-    const result = await this.service.validate(body.email, body.code);
+    const result = await this.authService.validate(body.email, body.code);
     if (!result.success) {
-      c.status(400);
-      return c.json({ success: false, detail: result.detail });
+      return c.json({ success: false, detail: result.detail }, 400);
     }
-    return c.json({ success: true, customToken: result.data.customToken });
+    return c.json({ success: true, customToken: result.data.customToken }, 200);
   }
 
   public async handleAuthCodeRequest(c: Context) {
     const body = await c.req.json();
-    const res = await this.service.generateCode(body.email);
-    if (!res.success) {
-      c.status(400);
-      return c.json({ success: false, detail: res.detail });
+    const codeResult = await this.authService.generateCode(body.email);
+    if (!codeResult.success) {
+      return c.json({ success: false, detail: codeResult.detail }, 400);
     }
-    c.status(201);
-    return c.json({
-      success: true,
-      detail: "authentication code generated!",
-    });
+    const emailResult = await this.emailService.sendEmailWithAuthCode(
+      body.email,
+      codeResult.data.code
+    );
+    if (!emailResult.success) {
+      return c.json({ success: false, detail: emailResult.detail }, 400);
+    }
+    return c.json(
+      {
+        success: true,
+        detail: "authentication code generated!",
+      },
+      201
+    );
   }
 }

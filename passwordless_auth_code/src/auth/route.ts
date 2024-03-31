@@ -1,13 +1,14 @@
 import { Hono } from "hono";
 
-import { db, auth } from "./firebase";
+import { db, auth } from "../firebase";
 import { FirestoreAuthCodeRepository } from "./repository";
-import { AuthCodeService } from "./service";
+import { AuthCodeService, EmailService } from "./service";
 import { AuthHandler } from "./handler";
 
 const fsAuthCodeRepository = new FirestoreAuthCodeRepository(db);
 const authCodeService = new AuthCodeService(fsAuthCodeRepository, auth);
-const authHandler = new AuthHandler(authCodeService);
+const emailService = new EmailService();
+const authHandler = new AuthHandler(authCodeService, emailService);
 
 export const addAuthRoutes = (app: Hono): void => {
   app.post("/auth", (c) => authHandler.handleAuth(c));

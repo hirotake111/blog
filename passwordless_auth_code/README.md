@@ -2,6 +2,11 @@
 
 ### Set up
 
+1. Create your Firebase project.
+2. Download service account JSON file from the project ([LINK](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments)).
+3. Rename the file as "serviceAccount.json"
+4. Install packages.
+
 ```bash
 npm install
 ```
@@ -10,7 +15,7 @@ npm install
 
 ```bash
 # create a test user
-bun run seed "<enter email address here>"  # ➜ user <email address> created!
+npm run seed "<enter email address here>"  # ➜ user <email address> created!
 
 # run dev server
 npm run dev  # ➜ http://localhost:3000
