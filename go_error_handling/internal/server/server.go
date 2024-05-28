@@ -29,5 +29,6 @@ func NewServer(config *config.Config, as *service.UserService) *http.Server {
 func addRoute(mux *http.ServeMux, _ *config.Config, as *service.UserService) {
 	mux.Handle("GET /", handler.HandleRoot())
 	mux.Handle("POST /signup", handler.HandleSignUp(as))
+	mux.Handle("POST /login", handler.HandleLogin(as))
 
 }
