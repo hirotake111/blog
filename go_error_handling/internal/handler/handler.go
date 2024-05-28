@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"go_error_handling/internal/domain"
+	"go_error_handling/internal/util"
 
 	// "go_error_handling/internal/util"
 	"net/http"
@@ -49,18 +51,16 @@ func HandleSignUp(us UserService) http.Handler {
 		}
 		userLoggedIn, err := us.SignUp(userSigningUp)
 		if err != nil {
-			encodeJson(w, http.StatusBadRequest, Response{
-				Message: "bad request",
-			})
+			if errors.Is(err, util.BadRequestError) {
+				encodeJson(w, http.StatusBadRequest, Response{Message: "bad request"})
+			} else {
+				encodeJson(w, http.StatusInternalServerError, Response{Message: "internal server error"})
+			}
 			return
 		}
-		if err = encodeJson(w, http.StatusCreated, Response{
+		encodeJson(w, http.StatusCreated, Response{
 			Message: fmt.Sprintf("user %s created", userLoggedIn.Name),
-		}); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode("internal server error")
-			return
-		}
+		})
 		return
 	})
 }

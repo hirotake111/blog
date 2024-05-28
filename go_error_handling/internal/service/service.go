@@ -1,10 +1,10 @@
 package service
 
 import (
-	"errors"
+	"fmt"
 	"go_error_handling/internal/domain"
 
-	// "go_error_handling/internal/util"
+	"go_error_handling/internal/util"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -26,15 +26,18 @@ func NewUserService(repository UserRepository) *UserService {
 
 func (s *UserService) SignUp(user *domain.UserSigningUp) (*domain.UserLoggedIn, error) {
 	if u, _ := s.repository.Get(user.Email); u != nil {
-		return nil, errors.New("user already exists")
+		fmt.Println("invalid user input")
+		return nil, util.BadRequestError
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 	if err != nil {
-		return nil, err
+		fmt.Println("error generating new hashed password: ", err)
+		return nil, util.BadRequestError
 	}
 	udb := user.ToUserInDB(hash, time.Now())
 	if err = s.repository.Add(udb); err != nil {
-		return nil, err
+		fmt.Println("error storing user data: ", err)
+		return nil, util.InternalServerError
 	}
 	return udb.ToLoggedIn(), nil
 }

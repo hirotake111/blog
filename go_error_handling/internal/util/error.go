@@ -5,11 +5,11 @@ type AppError struct {
 	detail string
 }
 
-func (e *AppError) Error() string {
+func (e AppError) Error() string {
 	return e.detail
 }
 
-func (e *AppError) Is(target error) bool {
+func (e AppError) Is(target error) bool {
 	t, ok := target.(*AppError)
 	if !ok {
 		return false
