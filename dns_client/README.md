@@ -1,6 +1,6 @@
 # DNS client
 
-A super simple DNS client. It only supports querying a single A record at a time.
+A super simple DNS client. It only supports querying a single A record at this moment.
 
 ### Usage
 
